@@ -14,10 +14,24 @@ def bayes(data, alpha_values, max_features_values):
     grid = GridSearchCV(pipeline, parameters, cv=10, verbose=1, n_jobs=-1)
     grid.fit(X_train, y_train)
 
+    file = open("bayes.csv", "a+")
+    for param in parameters.keys():
+        file.write(f"{param};")
+    file.write("Score\n")
+    params=grid.cv_results_['params']
+    scores=grid.cv_results_['mean_test_score']
+    for i in range(0, len(params)):
+        for param in params[i].values():
+            file.write(f"{str(param).replace('.',',')};")
+        file.write(f"{str(scores[i]).replace('.',',')}\n")
+
     best_params = grid.best_estimator_.get_params()
-    print(f"Best parameters: (alpha: {best_params['classifier__alpha']}), (max_features: {best_params['vectorizer__max_features']})")
+    print(f"Training data score: {grid.best_score_}")
+    print(
+        f"Best parameters: (alpha: {best_params['classifier__alpha']}), (max_features: {best_params['vectorizer__max_features']})")
 
     print(f"Score on test data: {grid.best_estimator_.score(X_test, y_test)}")
+    file.close()
 
 
 def svm(data, classifier__c, max_features_values):
@@ -29,7 +43,20 @@ def svm(data, classifier__c, max_features_values):
     grid = GridSearchCV(pipeline, parameters, cv=10, verbose=1, n_jobs=-1)
     grid.fit(X_train, y_train)
 
+    file = open("svm.csv", "a+")
+    for param in parameters.keys():
+        file.write(f"{param};")
+    file.write("Score\n")
+    params = grid.cv_results_['params']
+    scores = grid.cv_results_['mean_test_score']
+    for i in range(0, len(params)):
+        for param in params[i].values():
+            file.write(f"{str(param).replace('.', ',')};")
+        file.write(f"{str(scores[i]).replace('.', ',')}\n")
+    file.close()
+
     best_params = grid.best_estimator_.get_params()
+    print(f"Training data score: {grid.best_score_}")
     print(
         f"Best parameters: (C: {best_params['classifier__C']}), (max_features: {best_params['vectorizer__max_features']})")
 
@@ -46,8 +73,6 @@ def run_algorithms(data, alpha_values, c_values, k_values):
     for c in c_values:
         for k in k_values:
             svm(data, c, k)
-
-
 
     '''reviews = data_processing(data.data)
     classifier = MultinomialNB(alpha=alpha)
