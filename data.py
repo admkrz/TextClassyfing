@@ -16,7 +16,8 @@ def load_data():
         file = open(f"scaledata/{name}/subj.{name}", "r")
         lines = file.readlines()
         for line in lines:
-            data.data.append(re.findall(r'(\w[\w\']*)', line))
+            #data.data.append(re.findall(r'(\w[\w\']*)', line))
+            data.data.append(line.replace('\n',''))
         file.close()
 
         file = open(f"scaledata/{name}/label.3class.{name}", "r")
